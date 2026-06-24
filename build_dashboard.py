@@ -33,7 +33,7 @@ from html_template import render_html
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 CBS_CSV_PATH   = "data/buurt_data_merged.csv"
-GPKG_PATH      = "data/buurt-gemeente_2022.gpkg"
+GPKG_PATH      = "data/buurten_2022.gpkg"
 OUTPUT_HTML    = "output/dashboard.html"
 
 

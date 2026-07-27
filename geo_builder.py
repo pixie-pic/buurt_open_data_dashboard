@@ -44,6 +44,7 @@ def build_geojson(
         List of {key, label, n_missing, n_total} dicts, one per variable.
     """
     gdf = _load_geometries(gpkg_path)
+    gdf = _drop_water_buurten(gdf)
     merged = _merge_attributes(gdf, df)
     merged = _add_missing_flags(merged)
     merged = merged.to_crs(epsg=4326)
@@ -56,10 +57,20 @@ def build_geojson(
 
 # ── Private helpers ───────────────────────────────────────────────────────────
 
+def _drop_water_buurten(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    """Drop buurten that are entirely water (CBS 'water' column == 'JA')."""
+    if "water" not in gdf.columns:
+        print("Warning: no 'water' column found — skipping water filtering.")
+        return gdf
+    before = len(gdf)
+    gdf = gdf.loc[gdf["water"].astype(str).str.strip().str.upper() != "JA"].copy()
+    print(f"Dropped {before - len(gdf):,} all-water buurten ({len(gdf):,} remain)")
+    return gdf
+
 def _load_geometries(gpkg_path: str) -> gpd.GeoDataFrame:
     """Load buurt geometries and normalise string columns."""
     gdf = gpd.read_file(gpkg_path)
-    for col in ("buurtcode", "buurtnaam", "gemeentenaam"):
+    for col in ("buurtcode", "buurtnaam", "gemeentenaam", "provincienaam"):
         if col in gdf.columns:
             gdf[col] = gdf[col].astype(str).str.strip()
     print(f"Loaded {len(gdf):,} buurten from {gpkg_path}")
@@ -100,8 +111,8 @@ def _serialise_geojson(merged: gpd.GeoDataFrame) -> dict:
     """
     value_cols   = [col for col, _ in DASHBOARD_VARIABLES if col in merged.columns]
     missing_cols = [f"missing_{col}" for col, _ in DASHBOARD_VARIABLES if f"missing_{col}" in merged.columns]
-    extra_cols   = [c for c in ("gemeentenaam",) if c in merged.columns]
-
+    extra_cols   = [c for c in ("gemeentenaam", "provincienaam") if c in merged.columns]
+    
     keep = ["buurtcode", "buurtnaam", "geometry"] + extra_cols + missing_cols + value_cols
 
     export = (

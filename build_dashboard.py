@@ -19,12 +19,14 @@ Pipeline steps
 4. Write to output path
 """
 
+import json
 import sys
 from pathlib import Path
 
 # Allow running from repo root without installing the package
 sys.path.insert(0, str(Path(__file__).parent / "data_processing"))
 
+import json
 from etl import load_cbs_csv
 from geo_builder import build_geojson
 from html_template import render_html
@@ -32,9 +34,10 @@ from html_template import render_html
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-CBS_CSV_PATH   = "data/buurt_data_merged.csv"
-GPKG_PATH      = "data/buurt-gemeente_2022.gpkg"
-OUTPUT_HTML    = "output/dashboard.html"
+CBS_CSV_PATH     = "data/buurt_data_merged.csv"
+GPKG_PATH        = "data/buurten_2022.gpkg"
+OUTPUT_HTML      = "output/dashboard.html"
+OUTPUT_GEOJS     = "output/dashboard-data.js"
 
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────

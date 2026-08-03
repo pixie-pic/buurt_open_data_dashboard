@@ -36,7 +36,7 @@ from html_template import render_html
 
 CBS_CSV_PATH     = "data/buurt_data_merged.csv"
 GPKG_PATH        = "data/buurten_2022.gpkg"
-OUTPUT_HTML      = "output/dashboard.html"
+OUTPUT_HTML      = "output/index.html"
 OUTPUT_GEOJS     = "output/dashboard-data.js"
 
 
